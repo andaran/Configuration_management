@@ -61,6 +61,44 @@ class NotBash:
             self.path += "/".join(path) + "/"
             self.path = self.path.replace("//", "/")
 
+    def _tail(self, path):
+        with tarfile.open(self.config["file_system"], "r") as tar:
+            for member in tar.getmembers():
+                if member.name == self.path + path and member.isfile():
+                    break
+            else:
+                self.console.print("No such file")
+                return
+
+            with tar.extractfile(member) as f:
+                lines = f.readlines()
+                lines = [line.decode("utf-8") for line in lines]
+                self.console.print("".join(lines[-min(len(lines), 10):]))
+
+    def _du(self, path):
+        with tarfile.open(self.config["file_system"], "r") as tar:
+            for member in tar.getmembers():
+                if member.name == self.path + path and member.isdir():
+                    break
+            else:
+                self.console.print("No such directory")
+                return
+            
+            total_size = 0
+            for member in tar.getmembers():
+                if member.name.startswith(self.path + path):
+                    if not member.isfile():
+                        continue
+
+                    size = member.size
+                    name = "/" + "/".join(member.name.split("/")[2:])
+
+                    total_size += size
+                    self.console.print(f"{size}\t{name}")
+
+            self.console.print(f"Total size: {total_size} bytes")
+
+
     # --- Class methods ---
 
     def cmd_processing(self, command):
@@ -73,7 +111,13 @@ class NotBash:
                 new_path = self.path.replace(
                     self.config["file_system"].replace(".tar", ""), "")
                 self.console.set_path(new_path)
-                
+            case "tail":
+                self._tail(command[1])
+            case "du":
+                self._du(command[1])
+            case _:
+                self.console.print("Unknown command")
+
         self.console.insert_prompt()
     
     def run_start_script(self):
