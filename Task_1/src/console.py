@@ -19,9 +19,6 @@ class Console:
         self.console.bind('<Return>', self.execute_command)
         self.console.config(font=("Courier New", 12))
 
-        self.console.insert(tk.END, "$ ")
-        self.console.mark_set("insert", tk.END)
-
     def execute_command(self, event):
         input_text = self.console.get("1.0", tk.END)
 
@@ -33,11 +30,19 @@ class Console:
             return
 
         output = self.cmd_callback(command)
-
-        self.console.insert(tk.END, f"\n{output}\n$ ")
-        self.console.mark_set("insert", tk.END)
+        self.console.insert(tk.END, "\n")
+        self.print(output)
+        self.insert_prompt()
 
         return "break"
+    
+    def print(self, text):
+        self.console.insert(tk.END, f"{text}\n")
+        self.console.mark_set("insert", tk.END)
+
+    def insert_prompt(self):
+        self.console.insert(tk.END, "$ ")
+        self.console.mark_set("insert", tk.END)
     
     def run(self):
         self.root.mainloop()
