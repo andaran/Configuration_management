@@ -8,6 +8,7 @@ class Console:
 
     def __init__(self, cmd_callback):
         self.cmd_callback = cmd_callback
+        self.path = "/"
 
         self.root = tk.Tk()
         self.root.title("Not Bash")
@@ -23,26 +24,26 @@ class Console:
         input_text = self.console.get("1.0", tk.END)
 
         command = input_text.split("\n")[-2].strip()
-        command = command.replace("$ ", "")
+        command = command.split("$")[1].strip()
 
         if command == "exit":
             self.root.quit()
             return
 
-        output = self.cmd_callback(command)
         self.console.insert(tk.END, "\n")
-        self.print(output)
-        self.insert_prompt()
+        self.cmd_callback(command)
 
         return "break"
     
-    def print(self, text):
+    def print(self, text=""):
         self.console.insert(tk.END, f"{text}\n")
-        self.console.mark_set("insert", tk.END)
 
     def insert_prompt(self):
-        self.console.insert(tk.END, "$ ")
+        self.console.insert(tk.END, f"user@computer:{self.path}$ ")
         self.console.mark_set("insert", tk.END)
+
+    def set_path(self, path):
+        self.path = path
     
     def run(self):
         self.root.mainloop()
