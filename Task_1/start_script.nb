@@ -1,2 +1,4 @@
 ls
-ls
+du home
+cd etc
+tail passwd
