@@ -24,20 +24,24 @@ class NotBash:
 
     # --- Commands processing ---
 
-    def _ls(self):
+    def _ls(self, append_path=""):
+        path = self.get_path(append_path)
         elems = set()
         with tarfile.open(self.config["file_system"], "r") as tar:
             for member in tar.getmembers():
-                if not member.name.startswith(self.path):
+                if not member.name.startswith(path):
                     continue
-                elems.add(member.name.split("/")[self.path.count("/")])     
+                elems.add(member.name.split("/")[path.count("/")])     
 
-        self.console.print("\n".join(elems))
+        return "\n".join(elems)
 
     def _cd(self, path):
         self.path = self.path.replace("//", "/")
         if type(path) != list:
             path = path.split("/")
+        if path[0] == "" and len(path) > 1:
+            self.path = "/".join(self.path.split("/")[:2]) + "/"
+            return self._cd(path[1:])
         if path[0] == "":
             return
 
@@ -55,38 +59,38 @@ class NotBash:
                        member.isdir():
                         break
                 else:
-                    self.console.print("No such directory")
-                    return
+                    return "No such directory"
 
             self.path += "/".join(path) + "/"
             self.path = self.path.replace("//", "/")
 
     def _tail(self, path):
+        path = self.get_path(path)[:-1]
         with tarfile.open(self.config["file_system"], "r") as tar:
             for member in tar.getmembers():
-                if member.name == self.path + path and member.isfile():
+                if member.name == path and member.isfile():
                     break
             else:
-                self.console.print("No such file")
-                return
+                return "No such file"
 
             with tar.extractfile(member) as f:
                 lines = f.readlines()
                 lines = [line.decode("utf-8") for line in lines]
-                self.console.print("".join(lines[-min(len(lines), 10):]))
+                return "".join(lines[-min(len(lines), 10):])
 
-    def _du(self, path):
+    def _du(self, path = ""):
+        path = self.get_path(path)[:-1]
         with tarfile.open(self.config["file_system"], "r") as tar:
             for member in tar.getmembers():
-                if member.name == self.path + path and member.isdir():
+                if member.name == path and member.isdir():
                     break
             else:
-                self.console.print("No such directory")
-                return
+                return "No such directory"
             
             total_size = 0
+            result = ""
             for member in tar.getmembers():
-                if member.name.startswith(self.path + path):
+                if member.name.startswith(path):
                     if not member.isfile():
                         continue
 
@@ -94,27 +98,46 @@ class NotBash:
                     name = "/" + "/".join(member.name.split("/")[2:])
 
                     total_size += size
-                    self.console.print(f"{size}\t{name}")
+                    result += f"{size}\t{name}" + "\n"
 
-            self.console.print(f"Total size: {total_size} bytes")
+            return result + f"Total size: {total_size} bytes"
 
 
     # --- Class methods ---
+
+    def get_path(self, path):
+        path = path.split("/")
+        result_path = self.path
+        if path[0] == "" and len(path) > 1:
+            result_path = "./file_system/"
+            path = path[1:]
+        for elem in path:
+            if elem == "..":
+                result_path = "/".join(result_path.split("/")[:-2]) + "/"
+            elif elem == ".":
+                continue
+            else:
+                result_path += elem + "/"
+            result_path = result_path.replace("//", "/")
+        return result_path
 
     def cmd_processing(self, command):
         command = command.split(" ")
         match command[0]:
             case "ls":
-                self._ls()
+                self.console.print(self._ls(command[1] if len(command) > 1 else ""))
             case "cd":
-                self._cd(command[1])
+                error = self._cd(command[1])
+                if error:
+                    self.console.print(error)
+
                 new_path = self.path.replace(
                     self.config["file_system"].replace(".tar", ""), "")
                 self.console.set_path(new_path)
             case "tail":
-                self._tail(command[1])
+                self.console.print(self._tail(command[1]))
             case "du":
-                self._du(command[1])
+                self.console.print(self._du(command[1] if len(command) > 1 else ""))
             case _:
                 self.console.print("Unknown command")
 
