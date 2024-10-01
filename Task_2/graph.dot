@@ -1,8 +1,11 @@
 digraph G {
     graph [layout=neato, overlap=false, splines=true];
-    "microsoft.entityframeworkcore"
-    "Microsoft.EntityFrameworkCore.Abstractions" -> "microsoft.entityframeworkcore";
-    "Microsoft.EntityFrameworkCore.Analyzers" -> "microsoft.entityframeworkcore";
-    "Microsoft.Extensions.Caching.Memory" -> "microsoft.entityframeworkcore";
-    "Microsoft.Extensions.Logging" -> "microsoft.entityframeworkcore";
+    "Npgsql"
+    "System.Diagnostics.DiagnosticSource" -> "Npgsql";
+    "Microsoft.Bcl.HashCode" -> "Npgsql";
+    "System.Threading.Channels" -> "Npgsql";
+    "System.Runtime.CompilerServices.Unsafe" -> "Npgsql";
+    "System.Collections.Immutable" -> "Npgsql";
+    "Microsoft.Extensions.Logging.Abstractions" -> "Npgsql";
+    "System.Text.Json" -> "Npgsql";
 }

@@ -15,7 +15,6 @@ def download_nuget_package(nuget_url, path):
     if response.status_code == 200:
         with open(path, 'wb') as f:
             f.write(response.content)
-        print(f"Package downloaded: {path}")
         return path
     else:
         return None
@@ -24,7 +23,6 @@ def get_dependencies(package_path):
     dependencies = []
     with zipfile.ZipFile(package_path, 'r') as zip_ref:
         for file_info in zip_ref.infolist():
-            print(file_info)
             if file_info.filename.endswith('.nuspec'):
                 with zip_ref.open(file_info) as nuspec_file:
                     nuspec_content = nuspec_file.read()
@@ -38,7 +36,7 @@ def parse_nuspec(nuspec_content):
     dependency_pattern = r'<dependency id="([^"]+)"'
     dependencies = re.findall(dependency_pattern, nuspec_text)
 
-    return dependencies
+    return set(dependencies)
 
 def generate_dot_graph(package_name, dependencies):
     dot = 'digraph G {\n'
@@ -61,9 +59,15 @@ def visualize_graph(visualizer_path, dot_graph):
 
 if __name__ == "__main__":
     config = load_config("config.yaml")
-    package_name = str(config["repository_url"].split("/")[5])
+    package_name = str(config["repository_url"].split("/")[6])
     
+    print("Визуализация графа зависимостей для пакета: ", package_name)
+    print("[1/3] Скачивание пакета ...")
     if download_nuget_package(config["repository_url"], config["package_path"]):
+        print("[2/3] Чтение зависимостей ...")
         dependencies = get_dependencies(config["package_path"])
+        print("[3/3] Построение графа ...")
         dot_graph = generate_dot_graph(package_name, dependencies)
         visualize_graph(config['visualizer_path'], dot_graph)
+    else:
+        print("Не удалось скачать пакет (")
