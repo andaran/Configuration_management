@@ -1,0 +1,8 @@
+digraph G {
+    graph [layout=neato, overlap=false, splines=true];
+    "microsoft.entityframeworkcore"
+    "Microsoft.EntityFrameworkCore.Abstractions" -> "microsoft.entityframeworkcore";
+    "Microsoft.EntityFrameworkCore.Analyzers" -> "microsoft.entityframeworkcore";
+    "Microsoft.Extensions.Caching.Memory" -> "microsoft.entityframeworkcore";
+    "Microsoft.Extensions.Logging" -> "microsoft.entityframeworkcore";
+}
