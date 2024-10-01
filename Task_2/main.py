@@ -57,17 +57,29 @@ def visualize_graph(visualizer_path, dot_graph):
 
     print(f"Граф зависимостей сохранен в: {output_png}")
 
+def download_and_get_deps(url, path, deps):
+    package_name = str(url.split("/")[6])
+    print(f"[i] Скачиваю пакет {package_name} для анализа зависимостей")
+    download_nuget_package(url, path)
+    dependencies = get_dependencies(path)
+    for dep in dependencies:
+        if dep in deps:
+            continue
+        deps.append(dep)
+        download_and_get_deps(f"https://www.nuget.org/api/v2/package/{dep}", "./temp/package.nupkg", deps)
+    return deps
+
 if __name__ == "__main__":
     config = load_config("config.yaml")
     package_name = str(config["repository_url"].split("/")[6])
-    
+
     print("Визуализация графа зависимостей для пакета: ", package_name)
-    print("[1/3] Скачивание пакета ...")
-    if download_nuget_package(config["repository_url"], config["package_path"]):
-        print("[2/3] Чтение зависимостей ...")
-        dependencies = get_dependencies(config["package_path"])
-        print("[3/3] Построение графа ...")
-        dot_graph = generate_dot_graph(package_name, dependencies)
-        visualize_graph(config['visualizer_path'], dot_graph)
-    else:
-        print("Не удалось скачать пакет (")
+    dependencies = download_and_get_deps(
+        config["repository_url"],
+        config["package_path"],
+        [],
+    )
+    
+    print("[i] Построение графа ...")
+    dot_graph = generate_dot_graph(package_name, dependencies)
+    visualize_graph(config['visualizer_path'], dot_graph)

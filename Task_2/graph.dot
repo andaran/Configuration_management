@@ -1,11 +1,13 @@
 digraph G {
     graph [layout=neato, overlap=false, splines=true];
-    "Npgsql"
-    "System.Diagnostics.DiagnosticSource" -> "Npgsql";
-    "Microsoft.Bcl.HashCode" -> "Npgsql";
-    "System.Threading.Channels" -> "Npgsql";
-    "System.Runtime.CompilerServices.Unsafe" -> "Npgsql";
-    "System.Collections.Immutable" -> "Npgsql";
-    "Microsoft.Extensions.Logging.Abstractions" -> "Npgsql";
-    "System.Text.Json" -> "Npgsql";
+    "Microsoft.Extensions.DependencyInjection"
+    "Microsoft.Bcl.AsyncInterfaces" -> "Microsoft.Extensions.DependencyInjection";
+    "System.Threading.Tasks.Extensions" -> "Microsoft.Extensions.DependencyInjection";
+    "System.Runtime.CompilerServices.Unsafe" -> "Microsoft.Extensions.DependencyInjection";
+    "System.Collections" -> "Microsoft.Extensions.DependencyInjection";
+    "Microsoft.NETCore.Platforms" -> "Microsoft.Extensions.DependencyInjection";
+    "Microsoft.NETCore.Targets" -> "Microsoft.Extensions.DependencyInjection";
+    "System.Runtime" -> "Microsoft.Extensions.DependencyInjection";
+    "System.Threading.Tasks" -> "Microsoft.Extensions.DependencyInjection";
+    "Microsoft.Extensions.DependencyInjection.Abstractions" -> "Microsoft.Extensions.DependencyInjection";
 }
