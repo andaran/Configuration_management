@@ -1,0 +1,15 @@
+! Настройка сервера
+workload: 230
+nodes: [1 3 16 37]
+settings: {
+    port = 8080
+    timeout = 1000
+    ! Настройки узлов
+    nodeSettings = {
+        port = 8081
+        timeout = 900
+    }
+    maxConnections = 10
+    workload = 230
+}
+threads: 2
