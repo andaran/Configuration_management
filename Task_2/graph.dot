@@ -1,13 +1,13 @@
 digraph G {
     graph [layout=neato, overlap=false, splines=true];
     "Microsoft.Extensions.DependencyInjection"
-    "Microsoft.Bcl.AsyncInterfaces" -> "Microsoft.Extensions.DependencyInjection";
     "System.Threading.Tasks.Extensions" -> "Microsoft.Extensions.DependencyInjection";
-    "System.Threading.Tasks" -> "Microsoft.Extensions.DependencyInjection";
-    "Microsoft.NETCore.Platforms" -> "Microsoft.Extensions.DependencyInjection";
     "System.Runtime" -> "Microsoft.Extensions.DependencyInjection";
+    "Microsoft.NETCore.Platforms" -> "Microsoft.Extensions.DependencyInjection";
     "Microsoft.NETCore.Targets" -> "Microsoft.Extensions.DependencyInjection";
-    "System.Collections" -> "Microsoft.Extensions.DependencyInjection";
     "System.Runtime.CompilerServices.Unsafe" -> "Microsoft.Extensions.DependencyInjection";
+    "System.Collections" -> "Microsoft.Extensions.DependencyInjection";
+    "System.Threading.Tasks" -> "Microsoft.Extensions.DependencyInjection";
     "Microsoft.Extensions.DependencyInjection.Abstractions" -> "Microsoft.Extensions.DependencyInjection";
+    "Microsoft.Bcl.AsyncInterfaces" -> "Microsoft.Extensions.DependencyInjection";
 }
