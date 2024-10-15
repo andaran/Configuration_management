@@ -1,6 +1,32 @@
 import re
 import sys
 
+def evaluate_postfix(expression, constants):
+    stack = []
+    tokens = expression.split()
+
+    for token in tokens:
+        if token.isdigit():
+            stack.append(int(token))
+        elif token in constants:
+            stack.append(constants[token])
+        elif token == '+':
+            b = stack.pop()
+            a = stack.pop()
+            stack.append(a + b)
+        elif token == '-':
+            b = stack.pop()
+            a = stack.pop()
+            stack.append(a - b)
+        elif token == 'sqrt':
+            a = stack.pop()
+            stack.append(a ** 0.5)
+        else:
+            return None
+
+    return stack.pop()
+
+
 def parse_array(nesting, array_str):
     array_str = array_str.strip()
 
@@ -18,14 +44,13 @@ def parse_array(nesting, array_str):
 
     return result
 
-def parse_value(value):
-    pass
 
 def parse_config(file_content):
     lines = file_content.splitlines()
     result = ""
     nesting = 0
     is_dict = False
+    constants = {}
 
     for num, line in enumerate(lines):
         line = line.strip()
@@ -42,6 +67,19 @@ def parse_config(file_content):
         # Комментарий
         if line.startswith('!'):
             result += f"{'  ' * nesting}# {line[1:].strip()}\n"
+
+        # Обработка выражний
+        while True:
+            postfix_match = re.search(r"\^\((.+?)\)", line)
+            if postfix_match is None:
+                break
+
+            expression = postfix_match.group(1)
+            exp_res = evaluate_postfix(expression, constants)
+            if exp_res is None:
+                raise ValueError(f"Неверное выражение: {expression} (строка {num + 1})")
+            line = line.replace(postfix_match.group(), str(exp_res))
+
 
         # Константы
         const_match = re.match(r"^[a-zA-Z]+", line)
@@ -72,9 +110,11 @@ def parse_config(file_content):
                     raise ValueError(f"Неверный формат массива: {line} (строка {num + 1})")
                 result += array
             else:
-                if not value.isdigit():
-                    raise ValueError(f"Неверный формат числа: {line} (строка {num + 1})")
+                num_pattern = re.compile(r"^\d+(\.\d+)?$")
+                if not num_pattern.match(value):
+                    raise ValueError(f"Неверный формат значения: {line} (строка {num + 1})")
                 result += f" {value}\n"
+                constants[name] = float(value)
             continue
 
         # Закрытие словаря
