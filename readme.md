@@ -13,6 +13,97 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
+## Задание 4
+
+### Описание
+Ассемблер и интерпретатор для учебной виртуальной машины (УВМ).
+Ассемблер преобразует код с командами в бинарный файл. Затем этот бинарный
+файл посторочно читывает интерпретатор и исполняет команды. Результат работы
+интерпретатора записывается в виде диапазона значений памяти виртуальной машины
+в xml.
+
+### Функции
+- Трансляция ассемблера в бинарный файл;
+- Вывод логов при трансляции в xml файл;
+- Интерпретация бинарного файла с командами;
+- Вывод диапазона из памяти УВМ в xml файл.
+
+### Старт проекта
+1. Открыть директорию Task_4
+2. Запустить assembler.py с передачей аргументами файла с кодом, 
+имени выходного бинарного файла и файла для сохрания логов.
+3. Запустить interpreter.py с передачей аргументами бинарного файла с командами,
+файла для вывода значений из памяти и диапазона адресов памяти для вывода.
+```bash
+cd Task_4
+python assembler.py program.txt binary_output.bin --log_file log.xml
+python interpreter.py binary_output.bin result.xml --memory_range 0 8
+```
+
+### Использование и тестирование
+Файл program.txt:
+```
+# Загрузка значений в вектор A (по адресам 0, 1, 2, 3)
+212 0 10
+212 1 20
+212 2 30
+212 3 40
+
+# Загрузка значений в вектор B (по адресам 4, 5, 6, 7)
+212 4 20
+212 5 10
+212 6 40
+212 7 30
+
+# Сравнение элементов векторов A и B
+217 0 4
+217 1 5
+217 2 6
+217 3 7
+```
+
+Запускаем ассемблер:
+```bash
+python assembler.py program.txt binary_output.bin --log_file log.xml
+```
+
+log.xml:
+```xml
+<log>
+  <command A="212" B="0" C="10" />
+  <command A="212" B="1" C="20" />
+  <command A="212" B="2" C="30" />
+  <command A="212" B="3" C="40" />
+  <command A="212" B="4" C="20" />
+  <command A="212" B="5" C="10" />
+  <command A="212" B="6" C="40" />
+  <command A="212" B="7" C="30" />
+  <command A="217" B="0" C="4" />
+  <command A="217" B="1" C="5" />
+  <command A="217" B="2" C="6" />
+  <command A="217" B="3" C="7" />
+</log>
+```
+
+Запускаем интерпретатор:
+```bash
+python interpreter.py binary_output.bin result.xml --memory_range 0 8
+```
+
+result.xml:
+```xml
+<result>
+  <memory address="0">1</memory>
+  <memory address="1">0</memory>
+  <memory address="2">1</memory>
+  <memory address="3">0</memory>
+  <memory address="4">20</memory>
+  <memory address="5">10</memory>
+  <memory address="6">40</memory>
+  <memory address="7">30</memory>
+</result>
+```
+
 ## Задание 3
 
 ### Описание
